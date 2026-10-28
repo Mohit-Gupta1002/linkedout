@@ -48,13 +48,29 @@ LinkedOut is a modern full-stack professional social network combining:
 - Verified positive themes and reported reasons for leaving.
 - Sample sizes and date ranges disclosed on every profile to prevent single-review bias.
 - **Anonymous Experience Flow** (`/share-experience`): Collects structured ratings and pros/cons with explicit community guidelines preventing personal attacks or proprietary trade secrets.
+- **AI Workplace Intelligence Synthesis**: Deterministic, grounded consensus summary on company profile pages (`CompanyAISummary.tsx`) disclosing consensus strengths, friction areas, and candidate fit advice.
 
-### 5. Universal Discovery & Explore (`/explore`)
+### 5. Direct Messaging System (`/messages`)
+- 1-to-1 persistent threads with peer profiles and active presence indicators.
+- Responsive conversation split pane with time-stamped chat bubbles and read status.
+- Quick reply suggestion pills for swift professional responses.
+- Respectful messaging safety banner enforcing minor protection rules and fraud safeguards.
+
+### 6. Interactive Community Polls
+- Dedicated poll authoring within the post composer.
+- Dynamic vote distribution progress bars and live vote counting.
+- Privacy-preserving voting decoupled from user identity.
+
+### 7. Universal Discovery & Explore (`/explore`)
 - Search across professionals, companies, communities, and trending engineering RFCs.
 - Instant 1-click follow/unfollow integration.
 
-### 6. Notifications Center (`/notifications`)
+### 8. Notifications Center (`/notifications`)
 - Unread badge counters, category filters, mark single as read, and mark all as read.
+
+### 9. Dedicated Workspaces & Settings
+- **My Communities** (`/my-communities`): Quick-jump directory of joined domain spaces and live topic channels.
+- **Account & Privacy Settings** (`/settings`): Controls for default participation mode (public vs protected pseudonym), notifications, and theme.
 
 ---
 
