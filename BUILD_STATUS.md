@@ -85,14 +85,33 @@
   - Account, Theme & Pseudonym Settings (`/settings`): Controls for default participation mode (public vs protected pseudonym), notifications, and theme.
   - Password Reset Flow (`/auth/forgot-password` and `/auth/reset-password`).
   - Auth Callback handler (`/auth/callback`).
-- [x] **Database & Security Architecture**:
-  - Full PostgreSQL schema in `supabase/migrations/20261028_linkedout_schema.sql` with Row Level Security (RLS) on all exposed tables.
-  - Strict decoupling of private user demographics and pseudonymous identity tokens.
-  - Safe client abstraction in `src/lib/supabase.ts` with graceful fallback to `StorageEngine`.
+- [x] **Mandatory Onboarding Modal & 18+ Age Gate (`OnboardingModal.tsx`)**:
+  - Displays centered modal with blurred backdrop dimming (`backdrop-filter: blur(14px)`) for unonboarded visitors.
+  - Prevents background scrolling and interaction until onboarding is completed.
+  - Multi-step flow: Basic Details & Age -> Professional Domain -> Technical Interests -> Dual Identity & Protected Pseudonym.
+  - Strict 18+ age enforcement on both client and server side (`/api/auth/validate-age`).
+  - Blocks underage users (< 18) with a dedicated lockout state with zero bypass or loophole.
+  - Accurate date-of-birth age calculation accounting for calendar day and month threshold.
+  - Preserves entered data across back/next navigation.
+- [x] **Compact Icon-First Top Navigation (`Navigation.tsx`)**:
+  - Simplified upper navigation removing crowded text labels for a high-craft, minimalist aesthetic.
+  - Recognizable Lucide icons for Home, Explore & Search, Communities, Anonymous Workplace Intelligence, Messages, and Notifications.
+  - Accessible floating tooltips on hover (`.nav-tooltip`) with WCAG-compliant contrast.
+  - Visible active indicator pills (`.active-indicator`) reflecting current route.
+  - Unread notification and message badges retained.
+  - Prominent Create button and accessible theme toggle.
+- [x] **Anonymous Workplace Intelligence Consistency**:
+  - Renamed "Companies" to **"Anonymous Workplace Intelligence"** across navigation tooltips, page headings, search categories, breadcrumbs, and sidebar widgets.
+  - Clear disclosures that employee submissions are pseudonymous and unverified claims are separated from confirmed corporate information.
+- [x] **Continuous Anonymous Workplace Signals Ticker (`WorkplaceSignalsTicker.tsx`)**:
+  - Slim, high-contrast bottom marquee pinned exclusively to the Anonymous Workplace Intelligence section (`/companies` and `/companies/[slug]`).
+  - Seamless infinite horizontal CSS scroll with pause on hover/focus and reduced-motion support.
+  - Real employee signal snippets with dynamic evidence badges ("Reported", "Unverified submission", "Multiple submissions").
+  - Strictly absent from unrelated routes (Home feed, Explore, Communities, Messages).
 
 ### Known Issues & Mitigations
 - In the automated browser testing environment, Playwright's browser driver download from AzureEdge CDN encountered a network 404, preventing headless browser automation.
-- **Mitigation & Verification**: All 19 core application endpoints were independently verified via automated HTTP status smoke tests (`tests/http_smoke.mjs`), returning `200 OK` across the board, and the automated unit test suite passed 7 / 7 tests with 100% success.
+- **Mitigation & Verification**: All 19 core application endpoints and 3 server-side validation API behaviors were verified through automated Node.js test runners (`tests/core.test.mjs` and `tests/http_smoke.mjs`), with 100% test pass rate.
 
 ### Tests Run & Actual Results
 - **Automated Test Suite** (`npm test`):
@@ -104,7 +123,11 @@
     - ✔ Test 5: Communities: Domain spaces contain topic channels and member counts (PASS)
     - ✔ Test 6: Company Intelligence: Category scores compute properly within [1, 5] bounds (PASS)
     - ✔ Test 7: Interactive Polls: Voting updates total votes and computes correct percentage distribution (PASS)
-  - Result: 7 / 7 unit tests passed (0 failures, 80ms duration).
+    - ✔ Test 8: Age Gate: Accurately validates 18+ requirement and blocks underage users (PASS)
+    - ✔ Test 9: Onboarding Validation: Required fields display_name and username are strictly validated (PASS)
+    - ✔ Test 10: Onboarding State: Completed onboarding sets flag so returning users are not re-prompted (PASS)
+    - ✔ Test 11: Workplace Signals Ticker: Configured strictly for Anonymous Workplace Intelligence routes (PASS)
+  - Result: 11 / 11 unit tests passed (0 failures, 82ms duration).
   - `tests/http_smoke.mjs` executed against dev server (`http://localhost:3000`):
     - [PASS 200] /
     - [PASS 200] /feed
@@ -125,15 +148,21 @@
     - [PASS 200] /auth/forgot-password
     - [PASS 200] /auth/reset-password
     - [PASS 200] /auth/onboarding
-  - Result: 19 / 19 HTTP routes returned 200 OK!
+  - Server-Side Age Validation API checks:
+    - [PASS 403] /api/auth/validate-age (Underage age: 16 properly rejected)
+    - [PASS 200] /api/auth/validate-age (Adult age: 22 properly verified)
+    - [PASS 400] /api/auth/validate-age (Missing required display_name rejected)
+  - Result: 19 / 19 HTTP routes and 3 / 3 API checks returned expected status!
 - **TypeScript & Production Build** (`npm run build`):
-  - Turbopack compilation: SUCCESS (21 static and partial-prerendered routes compiled with 0 TypeScript errors).
+  - Turbopack compilation: SUCCESS (25 static, dynamic, and partial-prerendered routes compiled with 0 TypeScript errors).
 
 ### Missing Credentials
 - Supabase live keys (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) are optional; local dual-mode storage engine active with full persistence.
 
 ### Repository and Deployment Status
 - Local Git initialized (`main`).
+- Remote GitHub repository: [https://github.com/Mohit-Gupta1002/linkedout](https://github.com/Mohit-Gupta1002/linkedout).
 - GitHub CLI authenticated as `Mohit-Gupta1002`.
 - Production build verified.
+
 

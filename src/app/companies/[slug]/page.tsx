@@ -10,6 +10,7 @@ import {
 import { Company, CompanySubmission } from '@/types';
 import { StorageEngine } from '@/lib/storage';
 import CompanyAISummary from '@/components/CompanyAISummary';
+import WorkplaceSignalsTicker from '@/components/WorkplaceSignalsTicker';
 
 export default function CompanyDetailPage() {
   return (
@@ -39,7 +40,7 @@ function CompanyDetailContent() {
       <div className="app-container not-found-box">
         <h2>Company profile not found</h2>
         <Link href="/companies" className="btn btn-secondary mt-3">
-          &larr; Back to Companies
+          &larr; Back to Anonymous Workplace Intelligence
         </Link>
       </div>
     );
@@ -63,7 +64,7 @@ function CompanyDetailContent() {
         <div className="profile-breadcrumb">
           <Link href="/companies" className="back-link">
             <ArrowLeft size={16} />
-            <span>All Companies</span>
+            <span>Anonymous Workplace Intelligence</span>
           </Link>
         </div>
 
@@ -211,9 +212,12 @@ function CompanyDetailContent() {
         </section>
       </div>
 
+      {/* Continuously Moving Anonymous Workplace Signals Ticker */}
+      <WorkplaceSignalsTicker />
+
       <style jsx>{`
         .company-profile-page {
-          padding: 2rem 0 5rem;
+          padding: 2rem 0 6rem;
         }
 
         .profile-breadcrumb {

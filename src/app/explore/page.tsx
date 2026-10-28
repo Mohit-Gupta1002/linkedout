@@ -123,7 +123,7 @@ export default function ExplorePage() {
             className={`tab-btn ${activeTab === 'companies' ? 'active' : ''}`}
           >
             <Building2 size={15} />
-            <span>Companies</span>
+            <span>Anonymous Workplace Intelligence</span>
           </button>
         </div>
 
@@ -237,16 +237,16 @@ export default function ExplorePage() {
           </section>
         )}
 
-        {/* Section 4: Companies */}
+        {/* Section 4: Anonymous Workplace Intelligence */}
         {(activeTab === 'all' || activeTab === 'companies') && (
           <section className="explore-section">
             <div className="section-header-row">
               <div className="section-title-group">
                 <Building2 size={18} className="text-purple" />
-                <h2>Top-Rated Tech Companies</h2>
+                <h2>Anonymous Workplace Intelligence & Culture Signals</h2>
               </div>
               <Link href="/companies" className="section-see-all">
-                Directory &rarr;
+                All Signals &rarr;
               </Link>
             </div>
 

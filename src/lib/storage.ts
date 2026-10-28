@@ -21,6 +21,8 @@ const STORAGE_KEYS = {
   FOLLOWED_USERS: 'linkedout_followed_users',
   CONVERSATIONS: 'linkedout_conversations',
   MESSAGES: 'linkedout_messages',
+  ONBOARDING_COMPLETED: 'linkedout_onboarding_completed',
+  AGE_VERIFIED: 'linkedout_age_verified',
   THEME: 'linkedout_theme'
 };
 
@@ -50,6 +52,20 @@ export const StorageEngine = {
     return safeGetItem<UserProfile>(STORAGE_KEYS.USER, CURRENT_USER);
   },
 
+  isOnboardingComplete(): boolean {
+    if (typeof window === 'undefined') return true;
+    const completedFlag = localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+    if (completedFlag !== null) {
+      return completedFlag === 'true';
+    }
+    // For a brand new visitor without any stored session, onboarding is pending
+    const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
+    if (!storedUser) {
+      return false;
+    }
+    return this.getUser().onboarding_completed === true;
+  },
+
   updateUser(updates: Partial<UserProfile>): UserProfile {
     const current = this.getUser();
     const updated = { ...current, ...updates };
@@ -58,9 +74,21 @@ export const StorageEngine = {
   },
 
   completeOnboarding(data: Partial<UserProfile>): UserProfile {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'true');
+    }
     return this.updateUser({
       ...data,
       onboarding_completed: true
+    });
+  },
+
+  resetOnboarding(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETED, 'false');
+    }
+    this.updateUser({
+      onboarding_completed: false
     });
   },
 

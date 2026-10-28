@@ -66,20 +66,20 @@ export default function FeedSidebarRight({
         </div>
       </div>
 
-      {/* Workplace Intelligence Spotlight */}
+      {/* Anonymous Workplace Intelligence Spotlight */}
       <div className="card widget-card">
         <div className="widget-header">
           <div className="widget-title-group">
             <Building2 size={16} className="text-purple" />
-            <h4 className="widget-title">Workplace Intelligence</h4>
+            <h4 className="widget-title">Anonymous Workplace Intelligence</h4>
           </div>
           <Link href="/companies" className="widget-view-all">
-            Directory
+            All Signals
           </Link>
         </div>
 
         <p className="widget-caption">
-          Verified company ratings calculated from candid employee submissions.
+          Anonymous company ratings and culture signals calculated from candid employee submissions.
         </p>
 
         <div className="company-spotlight-list">

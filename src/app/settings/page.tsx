@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   Settings, Shield, User, Bell, Sliders, 
-  Trash2, Save, Check, AlertTriangle, Moon, Sun, ArrowLeft 
+  Trash2, Save, Check, AlertTriangle, Moon, Sun, ArrowLeft, RotateCcw 
 } from 'lucide-react';
 import { StorageEngine } from '@/lib/storage';
 import { UserProfile } from '@/types';
@@ -64,6 +64,11 @@ export default function SettingsPage() {
       localStorage.clear();
       window.location.href = '/feed';
     }
+  };
+
+  const handleResetOnboarding = () => {
+    StorageEngine.resetOnboarding();
+    window.location.href = '/feed';
   };
 
   if (!user) return null;
@@ -241,10 +246,16 @@ export default function SettingsPage() {
             <h4>Developer Data Controls</h4>
           </div>
           <p>Reset mock data and re-seed all initial stories, companies, and discussions.</p>
-          <button onClick={handleResetCache} className="btn btn-outline btn-sm mt-3 text-error">
-            <Trash2 size={14} />
-            <span>Restore Factory Mock Data</span>
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
+            <button onClick={handleResetOnboarding} className="btn btn-secondary btn-sm">
+              <RotateCcw size={14} />
+              <span>Reset Onboarding (Trigger Modal)</span>
+            </button>
+            <button onClick={handleResetCache} className="btn btn-outline btn-sm text-error">
+              <Trash2 size={14} />
+              <span>Restore Factory Mock Data</span>
+            </button>
+          </div>
         </div>
       </div>
 

@@ -124,37 +124,72 @@ export default function Navigation() {
             </div>
           </div>
 
-          {/* Desktop Nav Links */}
-          <nav className="navbar-nav">
-            <Link href="/feed" className={`nav-item ${pathname === '/feed' ? 'active' : ''}`}>
-              <Home size={20} />
-              <span className="nav-label">Home</span>
+          {/* Desktop Nav Links (Compact Icon-First Navigation) */}
+          <nav className="navbar-nav" aria-label="Main Navigation">
+            <Link 
+              href="/feed" 
+              className={`nav-icon-btn ${pathname === '/feed' ? 'active' : ''}`}
+              aria-label="Home"
+            >
+              <Home size={21} />
+              <span className="nav-tooltip">Home</span>
+              {pathname === '/feed' && <span className="active-indicator" />}
             </Link>
-            <Link href="/explore" className={`nav-item ${pathname === '/explore' ? 'active' : ''}`}>
-              <Compass size={20} />
-              <span className="nav-label">Explore</span>
+
+            <Link 
+              href="/explore" 
+              className={`nav-icon-btn ${pathname === '/explore' ? 'active' : ''}`}
+              aria-label="Explore & Search"
+            >
+              <Compass size={21} />
+              <span className="nav-tooltip">Explore & Search</span>
+              {pathname === '/explore' && <span className="active-indicator" />}
             </Link>
-            <Link href="/communities" className={`nav-item ${pathname.startsWith('/communities') ? 'active' : ''}`}>
-              <Users size={20} />
-              <span className="nav-label">Communities</span>
+
+            <Link 
+              href="/communities" 
+              className={`nav-icon-btn ${pathname.startsWith('/communities') ? 'active' : ''}`}
+              aria-label="Communities"
+            >
+              <Users size={21} />
+              <span className="nav-tooltip">Communities</span>
+              {pathname.startsWith('/communities') && <span className="active-indicator" />}
             </Link>
-            <Link href="/companies" className={`nav-item ${pathname.startsWith('/companies') ? 'active' : ''}`}>
-              <Building2 size={20} />
-              <span className="nav-label">Companies</span>
+
+            <Link 
+              href="/companies" 
+              className={`nav-icon-btn ${pathname.startsWith('/companies') ? 'active' : ''}`}
+              aria-label="Anonymous Workplace Intelligence"
+            >
+              <Building2 size={21} />
+              <span className="nav-tooltip">Anonymous Workplace Intelligence</span>
+              {pathname.startsWith('/companies') && <span className="active-indicator" />}
             </Link>
-            <Link href="/messages" className={`nav-item ${pathname.startsWith('/messages') ? 'active' : ''}`}>
+
+            <Link 
+              href="/messages" 
+              className={`nav-icon-btn ${pathname.startsWith('/messages') ? 'active' : ''}`}
+              aria-label="Direct Messages"
+            >
               <div className="icon-badge-wrapper">
-                <MessageSquare size={20} />
+                <MessageSquare size={21} />
                 {unreadMessagesCount > 0 && <span className="nav-unread-dot">{unreadMessagesCount}</span>}
               </div>
-              <span className="nav-label">Messages</span>
+              <span className="nav-tooltip">Messages {unreadMessagesCount > 0 ? `(${unreadMessagesCount})` : ''}</span>
+              {pathname.startsWith('/messages') && <span className="active-indicator" />}
             </Link>
-            <Link href="/notifications" className={`nav-item ${pathname === '/notifications' ? 'active' : ''}`}>
+
+            <Link 
+              href="/notifications" 
+              className={`nav-icon-btn ${pathname === '/notifications' ? 'active' : ''}`}
+              aria-label="Notifications"
+            >
               <div className="icon-badge-wrapper">
-                <Bell size={20} />
+                <Bell size={21} />
                 {unreadCount > 0 && <span className="nav-unread-dot">{unreadCount}</span>}
               </div>
-              <span className="nav-label">Notifications</span>
+              <span className="nav-tooltip">Notifications {unreadCount > 0 ? `(${unreadCount})` : ''}</span>
+              {pathname === '/notifications' && <span className="active-indicator" />}
             </Link>
           </nav>
 
@@ -211,6 +246,13 @@ export default function Navigation() {
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
                       My Communities
+                    </Link>
+                    <Link 
+                      href="/companies" 
+                      className="dropdown-item" 
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      Anonymous Workplace Intelligence
                     </Link>
                     <Link 
                       href="/messages" 
@@ -295,7 +337,7 @@ export default function Navigation() {
               {/* Companies Match */}
               {searchResults.companies.length > 0 && (
                 <div className="search-section">
-                  <div className="search-section-title">Companies & Culture Insights</div>
+                  <div className="search-section-title">Anonymous Workplace Intelligence</div>
                   {searchResults.companies.slice(0, 3).map(comp => (
                     <Link 
                       key={comp.id} 
@@ -476,31 +518,81 @@ export default function Navigation() {
         .navbar-nav {
           display: flex;
           align-items: center;
-          gap: 0.35rem;
+          gap: 0.5rem;
         }
 
-        .nav-item {
+        .nav-icon-btn {
+          position: relative;
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 0.4rem 0.85rem;
+          width: 42px;
+          height: 42px;
           color: var(--text-secondary);
           border-radius: var(--radius-md);
-          font-size: 0.75rem;
-          font-weight: 500;
-          gap: 0.2rem;
+          background: transparent;
           transition: all var(--transition-fast);
+          text-decoration: none;
         }
 
-        .nav-item:hover {
+        .nav-icon-btn:hover {
           color: var(--brand-primary);
           background: var(--surface-hover);
         }
 
-        .nav-item.active {
+        .nav-icon-btn:focus-visible {
+          outline: 2px solid var(--brand-primary);
+          outline-offset: 2px;
+        }
+
+        .nav-icon-btn.active {
           color: var(--brand-primary);
+          background: var(--brand-primary-light);
+        }
+
+        .active-indicator {
+          position: absolute;
+          bottom: 2px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 16px;
+          height: 3px;
+          background: var(--brand-primary);
+          border-radius: var(--radius-full);
+        }
+
+        /* Accessible Floating Tooltip on Hover */
+        .nav-tooltip {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%) translateY(4px);
+          background: #102A43;
+          color: #FFFFFF;
+          font-size: 0.72rem;
           font-weight: 600;
+          padding: 0.25rem 0.6rem;
+          border-radius: var(--radius-sm);
+          white-space: nowrap;
+          pointer-events: none;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 140ms ease, transform 140ms ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+          z-index: 1000;
+        }
+
+        [data-theme="dark"] .nav-tooltip {
+          background: #1E293B;
+          color: #F8FAFC;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .nav-icon-btn:hover .nav-tooltip,
+        .nav-icon-btn:focus-visible .nav-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(0);
         }
 
         .icon-badge-wrapper {

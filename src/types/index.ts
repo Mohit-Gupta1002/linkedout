@@ -59,6 +59,8 @@ export interface UserProfile {
   onboarding_completed: boolean;
   
   /* Private demographic attributes - never exposed publicly */
+  age?: number;
+  birth_date?: string;
   age_range?: string;
   gender?: string;
   is_age_gender_private?: boolean;

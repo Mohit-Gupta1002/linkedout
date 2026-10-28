@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import './globals.css';
 import Navigation from '@/components/Navigation';
+import OnboardingModal from '@/components/OnboardingModal';
 
 export const metadata: Metadata = {
   title: 'LinkedOut — Your work. Your people. Your real story.',
@@ -27,6 +28,9 @@ export default function RootLayout({
       <body>
         <Suspense fallback={<div style={{ height: '64px', background: 'var(--surface-card)' }} />}>
           <Navigation />
+        </Suspense>
+        <Suspense fallback={null}>
+          <OnboardingModal />
         </Suspense>
         <Suspense fallback={<div className="app-container" style={{ padding: '2rem 1rem' }}>Loading...</div>}>
           <main>{children}</main>

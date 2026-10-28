@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Building2, Search, Star, Shield, ArrowRight, CheckCircle2, TrendingUp } from 'lucide-react';
 import { Company } from '@/types';
 import { StorageEngine } from '@/lib/storage';
+import WorkplaceSignalsTicker from '@/components/WorkplaceSignalsTicker';
 
 const INDUSTRIES = [
   'All',
@@ -37,11 +38,11 @@ export default function CompaniesDirectoryPage() {
         <div className="companies-hero">
           <div className="hero-badge">
             <Building2 size={16} />
-            <span>Workplace Intelligence</span>
+            <span>Anonymous Workplace Intelligence</span>
           </div>
-          <h1>Know Where You Work Before You Sign</h1>
+          <h1>Anonymous Workplace Intelligence</h1>
           <p>
-            Candid, verified insights from current and former employees. Transparent ratings across psychological safety, management style, compensation, and work-life balance.
+            Candid, pseudonymous workplace signals and evidence-based scorecards from current and former employees. All submissions are submitted under protected pseudonym tokens, and unverified workplace claims are strictly distinguished from confirmed facts.
           </p>
 
           <div className="companies-cta-row">
@@ -129,9 +130,12 @@ export default function CompaniesDirectoryPage() {
         </div>
       </div>
 
+      {/* Continuously Moving Anonymous Workplace Signals Ticker */}
+      <WorkplaceSignalsTicker />
+
       <style jsx>{`
         .companies-page {
-          padding: 2.5rem 0 5rem;
+          padding: 2.5rem 0 6rem;
         }
 
         .companies-hero {
