@@ -1,10 +1,11 @@
 import { 
   UserProfile, Post, Story, Community, Discussion, DiscussionReply, 
-  Company, CompanySubmission, NotificationItem 
+  Company, CompanySubmission, NotificationItem, DirectMessage, Conversation 
 } from '@/types';
 import { 
   CURRENT_USER, INITIAL_STORIES, INITIAL_POSTS, 
-  INITIAL_COMMUNITIES, INITIAL_DISCUSSIONS, INITIAL_COMPANIES, INITIAL_NOTIFICATIONS 
+  INITIAL_COMMUNITIES, INITIAL_DISCUSSIONS, INITIAL_COMPANIES, INITIAL_NOTIFICATIONS,
+  INITIAL_CONVERSATIONS, INITIAL_MESSAGES 
 } from './mockData';
 
 const STORAGE_KEYS = {
@@ -18,6 +19,8 @@ const STORAGE_KEYS = {
   COMPANY_SUBMISSIONS: 'linkedout_company_submissions',
   NOTIFICATIONS: 'linkedout_notifications',
   FOLLOWED_USERS: 'linkedout_followed_users',
+  CONVERSATIONS: 'linkedout_conversations',
+  MESSAGES: 'linkedout_messages',
   THEME: 'linkedout_theme'
 };
 
@@ -111,6 +114,42 @@ export const StorageEngine = {
       is_bookmarked: isBookmarked,
       bookmarks_count: isBookmarked ? post.bookmarks_count + 1 : Math.max(0, post.bookmarks_count - 1)
     };
+    posts[index] = updatedPost;
+    safeSetItem(STORAGE_KEYS.POSTS, posts);
+    return updatedPost;
+  },
+
+  votePoll(postId: string, optionId: string): Post | null {
+    const posts = this.getPosts();
+    const index = posts.findIndex(p => p.id === postId);
+    if (index === -1) return null;
+    const post = posts[index];
+    if (!post.poll) return null;
+
+    // Check if user already voted
+    const previousVote = post.poll.user_voted_option_id;
+    const updatedOptions = post.poll.options.map(opt => {
+      if (opt.id === optionId) {
+        return { ...opt, votes: opt.votes + 1 };
+      }
+      if (previousVote && opt.id === previousVote) {
+        return { ...opt, votes: Math.max(0, opt.votes - 1) };
+      }
+      return opt;
+    });
+
+    const totalVotes = updatedOptions.reduce((acc, curr) => acc + curr.votes, 0);
+
+    const updatedPost: Post = {
+      ...post,
+      poll: {
+        ...post.poll,
+        options: updatedOptions,
+        total_votes: totalVotes,
+        user_voted_option_id: optionId
+      }
+    };
+
     posts[index] = updatedPost;
     safeSetItem(STORAGE_KEYS.POSTS, posts);
     return updatedPost;
@@ -450,5 +489,73 @@ export const StorageEngine = {
 
   isFollowingUser(userId: string): boolean {
     return this.getFollowedUserIds().includes(userId);
+  },
+
+  // Direct Messaging
+  getConversations(): Conversation[] {
+    return safeGetItem<Conversation[]>(STORAGE_KEYS.CONVERSATIONS, INITIAL_CONVERSATIONS);
+  },
+
+  getMessages(conversationId?: string): DirectMessage[] {
+    const messages = safeGetItem<DirectMessage[]>(STORAGE_KEYS.MESSAGES, INITIAL_MESSAGES);
+    if (conversationId) {
+      return messages.filter(m => m.conversation_id === conversationId);
+    }
+    return messages;
+  },
+
+  sendMessage(conversationId: string, recipientId: string, content: string): DirectMessage {
+    const user = this.getUser();
+    const messages = safeGetItem<DirectMessage[]>(STORAGE_KEYS.MESSAGES, INITIAL_MESSAGES);
+    const newMsg: DirectMessage = {
+      id: `msg_${Date.now()}`,
+      conversation_id: conversationId,
+      sender_id: user.id,
+      sender_name: user.display_name,
+      sender_username: user.username,
+      sender_avatar: user.avatar_url,
+      recipient_id: recipientId,
+      content,
+      created_at: new Date().toISOString(),
+      is_read: false
+    };
+
+    const updatedMessages = [...messages, newMsg];
+    safeSetItem(STORAGE_KEYS.MESSAGES, updatedMessages);
+
+    // Update conversation last_message
+    const conversations = this.getConversations();
+    const updatedConversations = conversations.map(c => {
+      if (c.id === conversationId) {
+        return {
+          ...c,
+          last_message: content,
+          last_message_at: newMsg.created_at
+        };
+      }
+      return c;
+    });
+    safeSetItem(STORAGE_KEYS.CONVERSATIONS, updatedConversations);
+
+    return newMsg;
+  },
+
+  markConversationRead(conversationId: string): void {
+    const conversations = this.getConversations();
+    const updatedConversations = conversations.map(c => 
+      c.id === conversationId ? { ...c, unread_count: 0 } : c
+    );
+    safeSetItem(STORAGE_KEYS.CONVERSATIONS, updatedConversations);
+
+    const messages = this.getMessages();
+    const updatedMessages = messages.map(m => 
+      m.conversation_id === conversationId ? { ...m, is_read: true } : m
+    );
+    safeSetItem(STORAGE_KEYS.MESSAGES, updatedMessages);
+  },
+
+  getUnreadMessagesCount(): number {
+    return this.getConversations().reduce((acc, c) => acc + (c.unread_count || 0), 0);
   }
 };
+

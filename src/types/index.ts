@@ -64,7 +64,20 @@ export interface UserProfile {
   is_age_gender_private?: boolean;
 }
 
-export type PostType = 'text' | 'image' | 'project' | 'achievement' | 'article' | 'discussion';
+export type PostType = 'text' | 'image' | 'project' | 'achievement' | 'article' | 'discussion' | 'poll';
+
+export interface PollOption {
+  id: string;
+  text: string;
+  votes: number;
+}
+
+export interface PollData {
+  question: string;
+  options: PollOption[];
+  total_votes: number;
+  user_voted_option_id?: string;
+}
 
 export interface Post {
   id: string;
@@ -82,6 +95,7 @@ export interface Post {
   project_title?: string;
   project_link?: string;
   achievement_badge?: string;
+  poll?: PollData;
   tags?: string[];
   community_id?: string;
   community_name?: string;
@@ -248,4 +262,33 @@ export interface NotificationItem {
   link: string;
   is_read: boolean;
   created_at: string;
+}
+
+export interface DirectMessage {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  sender_name: string;
+  sender_username: string;
+  sender_avatar: string;
+  recipient_id: string;
+  content: string;
+  created_at: string;
+  is_read: boolean;
+}
+
+export interface Conversation {
+  id: string;
+  participant: {
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    headline: string;
+    is_online?: boolean;
+    domain: string;
+  };
+  last_message: string;
+  last_message_at: string;
+  unread_count: number;
 }

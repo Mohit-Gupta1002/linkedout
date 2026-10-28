@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { 
   Image as ImageIcon, Award, Rocket, Shield, 
-  Send, X, Sparkles, Globe, Lock, Plus, Users
+  Send, X, Sparkles, Globe, Lock, Plus, Users, BarChart3
 } from 'lucide-react';
 import { Post, UserProfile, PostType, Community } from '@/types';
 import { StorageEngine } from '@/lib/storage';
@@ -31,6 +31,10 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
   const [projectTitle, setProjectTitle] = useState('');
   const [projectLink, setProjectLink] = useState('');
   const [achievementBadge, setAchievementBadge] = useState('');
+  const [pollQuestion, setPollQuestion] = useState('');
+  const [pollOption1, setPollOption1] = useState('');
+  const [pollOption2, setPollOption2] = useState('');
+  const [pollOption3, setPollOption3] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -53,7 +57,7 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() && mediaUrls.length === 0) return;
+    if (!content.trim() && mediaUrls.length === 0 && !pollQuestion.trim()) return;
 
     setIsSubmitting(true);
 
@@ -64,6 +68,16 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
 
     const targetCommunity = communities.find(c => c.id === selectedCommunityId);
 
+    const pollData = postType === 'poll' && pollQuestion.trim() ? {
+      question: pollQuestion.trim(),
+      options: [
+        { id: 'opt_1', text: pollOption1.trim() || 'Option 1', votes: 0 },
+        { id: 'opt_2', text: pollOption2.trim() || 'Option 2', votes: 0 },
+        ...(pollOption3.trim() ? [{ id: 'opt_3', text: pollOption3.trim(), votes: 0 }] : [])
+      ],
+      total_votes: 0
+    } : undefined;
+
     const newPost = StorageEngine.addPost({
       author_id: currentUser.id,
       author_name: isPseudonymous ? (currentUser.pseudonym_username || 'Protected Engineer') : currentUser.display_name,
@@ -73,12 +87,13 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
       author_domain: currentUser.domain,
       is_pseudonymous: isPseudonymous,
       pseudonym_name: isPseudonymous ? (currentUser.pseudonym_username || 'Protected Identity') : undefined,
-      content,
+      content: content.trim() || (pollData ? pollData.question : ''),
       post_type: postType,
       media_urls: mediaUrls.length > 0 ? mediaUrls : undefined,
       project_title: projectTitle || undefined,
       project_link: projectLink || undefined,
       achievement_badge: achievementBadge || undefined,
+      poll: pollData,
       tags: tags.length > 0 ? tags : undefined,
       community_id: targetCommunity?.id,
       community_name: targetCommunity?.name
@@ -90,6 +105,10 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
     setProjectTitle('');
     setProjectLink('');
     setAchievementBadge('');
+    setPollQuestion('');
+    setPollOption1('');
+    setPollOption2('');
+    setPollOption3('');
     setTagsInput('');
     setIsExpanded(false);
     setIsSubmitting(false);
@@ -223,6 +242,42 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
               </div>
             )}
 
+            {/* Poll Creation Inputs */}
+            {postType === 'poll' && (
+              <div className="composer-extra-row poll-creator-box">
+                <input
+                  type="text"
+                  value={pollQuestion}
+                  onChange={(e) => setPollQuestion(e.target.value)}
+                  placeholder="Ask a technical or career question..."
+                  className="input sm mb-2"
+                />
+                <div className="poll-inputs-list">
+                  <input
+                    type="text"
+                    value={pollOption1}
+                    onChange={(e) => setPollOption1(e.target.value)}
+                    placeholder="Option 1 (e.g. Monorepo)"
+                    className="input sm"
+                  />
+                  <input
+                    type="text"
+                    value={pollOption2}
+                    onChange={(e) => setPollOption2(e.target.value)}
+                    placeholder="Option 2 (e.g. Polyrepo / Microservices)"
+                    className="input sm"
+                  />
+                  <input
+                    type="text"
+                    value={pollOption3}
+                    onChange={(e) => setPollOption3(e.target.value)}
+                    placeholder="Option 3 (Optional)"
+                    className="input sm"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Community and Tags Row */}
             <div className="form-row-2 composer-extra-row">
               <select 
@@ -285,11 +340,24 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
               <Award size={18} />
               <span>Milestone</span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPostType(postType === 'poll' ? 'text' : 'poll');
+                setIsExpanded(true);
+              }}
+              className={`tool-btn ${postType === 'poll' ? 'active' : ''}`}
+              title="Create a poll"
+            >
+              <BarChart3 size={18} />
+              <span>Poll</span>
+            </button>
           </div>
 
           <button
             type="submit"
-            disabled={isSubmitting || (!content.trim() && mediaUrls.length === 0)}
+            disabled={isSubmitting || (!content.trim() && mediaUrls.length === 0 && !(postType === 'poll' && pollQuestion.trim()))}
             className="btn btn-primary btn-sm composer-submit"
           >
             <span>{isSubmitting ? 'Posting...' : 'Post'}</span>
@@ -428,6 +496,20 @@ export default function PostComposer({ currentUser, communities, onPostCreated }
         .input-group-row {
           display: flex;
           gap: 0.5rem;
+        }
+
+        .poll-creator-box {
+          background: var(--surface-hover);
+          padding: 0.85rem;
+          border-radius: var(--radius-md);
+          border: 1px dashed var(--border-subtle);
+        }
+
+        .poll-inputs-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
         }
 
         .quick-sample-photos {

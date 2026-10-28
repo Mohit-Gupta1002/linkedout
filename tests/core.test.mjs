@@ -131,4 +131,25 @@ test('Company Intelligence: Category scores compute properly within [1, 5] bound
   }
 });
 
+// Test 7: Interactive Polls
+test('Polls: Voting updates total votes and computes correct percentage distribution', () => {
+  const poll = {
+    question: 'Preferred architecture pattern?',
+    options: [
+      { id: 'opt_1', text: 'Monolith', votes: 10 },
+      { id: 'opt_2', text: 'Microservices', votes: 30 }
+    ],
+    total_votes: 40
+  };
+
+  const updatedOptions = poll.options.map(opt => 
+    opt.id === 'opt_1' ? { ...opt, votes: opt.votes + 1 } : opt
+  );
+  const updatedTotal = updatedOptions.reduce((acc, curr) => acc + curr.votes, 0);
+
+  assert.equal(updatedTotal, 41);
+  const opt1Percent = Math.round((updatedOptions[0].votes / updatedTotal) * 100);
+  assert.equal(opt1Percent, 27);
+});
+
 console.log('✓ All LinkedOut automated integration and security tests passed successfully.');

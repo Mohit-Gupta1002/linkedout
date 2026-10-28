@@ -67,6 +67,11 @@ export default function PostCard({
     setIsFollowing(status);
   };
 
+  const handleVotePoll = (optionId: string) => {
+    const updated = StorageEngine.votePoll(post.id, optionId);
+    if (updated) onPostUpdated(updated);
+  };
+
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim() || !currentUser) return;
@@ -199,6 +204,48 @@ export default function PostCard({
                 <ExternalLink size={14} />
               </a>
             )}
+          </div>
+        )}
+
+        {/* Interactive Poll Box */}
+        {post.poll && (
+          <div className="post-poll-box">
+            <h4 className="poll-question">{post.poll.question}</h4>
+            <div className="poll-options-list">
+              {post.poll.options.map((opt) => {
+                const total = post.poll?.total_votes || 0;
+                const percent = total > 0 ? Math.round((opt.votes / total) * 100) : 0;
+                const hasVoted = Boolean(post.poll?.user_voted_option_id);
+                const isSelected = post.poll?.user_voted_option_id === opt.id;
+
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => handleVotePoll(opt.id)}
+                    className={`poll-option-btn ${isSelected ? 'selected' : ''}`}
+                  >
+                    <div className="poll-bar-fill" style={{ width: hasVoted ? `${percent}%` : '0%' }} />
+                    <div className="poll-option-content">
+                      <span className="poll-option-text">
+                        {isSelected && <Check size={14} className="poll-check-icon" />}
+                        {opt.text}
+                      </span>
+                      {hasVoted && (
+                        <span className="poll-option-pct">
+                          {percent}% ({opt.votes})
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="poll-footer-meta">
+              <span>{post.poll.total_votes} votes</span>
+              <span>&bull;</span>
+              <span>Anonymous voting enabled</span>
+            </div>
           </div>
         )}
 
@@ -487,6 +534,96 @@ export default function PostCard({
 
         .project-link-btn:hover {
           text-decoration: underline;
+        }
+
+        /* Poll Box Styles */
+        .post-poll-box {
+          background: var(--surface-hover);
+          border: 1px solid var(--border-subtle);
+          border-radius: var(--radius-md);
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .poll-question {
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: 0.85rem;
+        }
+
+        .poll-options-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .poll-option-btn {
+          position: relative;
+          width: 100%;
+          border: 1.5px solid var(--border-subtle);
+          background: var(--surface-card);
+          border-radius: var(--radius-md);
+          overflow: hidden;
+          padding: 0.65rem 0.85rem;
+          cursor: pointer;
+          text-align: left;
+          transition: all var(--transition-fast);
+        }
+
+        .poll-option-btn:hover {
+          border-color: var(--brand-primary);
+        }
+
+        .poll-option-btn.selected {
+          border-color: var(--brand-primary);
+          box-shadow: 0 0 0 2px var(--brand-primary-light);
+        }
+
+        .poll-bar-fill {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          background: var(--brand-primary-light);
+          transition: width 350ms cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 1;
+        }
+
+        .poll-option-content {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .poll-option-text {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+        }
+
+        .poll-check-icon {
+          color: var(--brand-primary);
+        }
+
+        .poll-option-pct {
+          font-size: 0.8125rem;
+          font-weight: 700;
+          color: var(--brand-primary);
+        }
+
+        .poll-footer-meta {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.75rem;
+          color: var(--text-muted);
         }
 
         .post-media-container {

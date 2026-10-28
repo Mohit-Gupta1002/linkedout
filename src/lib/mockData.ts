@@ -1,4 +1,4 @@
-import { UserProfile, Post, Story, Community, Discussion, Company, NotificationItem } from '@/types';
+import { UserProfile, Post, Story, Community, Discussion, Company, NotificationItem, DirectMessage, Conversation } from '@/types';
 
 export const CURRENT_USER: UserProfile = {
   id: 'usr_me',
@@ -182,6 +182,36 @@ export const INITIAL_POSTS: Post[] = [
     is_liked: false,
     is_bookmarked: true,
     created_at: new Date(Date.now() - 18 * 3600 * 1000).toISOString(),
+  },
+  {
+    id: 'post_5',
+    author_id: 'usr_rohit',
+    author_name: 'Rohit Kulkarni',
+    author_username: 'rohit_k',
+    author_avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80',
+    author_headline: 'Lead Site Reliability Engineer @ RazorCloud | Kubernetes & Observability',
+    author_domain: 'Software Engineering',
+    post_type: 'poll',
+    content: 'Which architecture pattern is your engineering organization prioritizing for high-scale backend services in 2026?',
+    poll: {
+      question: 'Which architecture pattern is your organization prioritizing for high-scale services in 2026?',
+      options: [
+        { id: 'opt_1', text: 'Modular Monolith (Turborepo / Go packages)', votes: 142 },
+        { id: 'opt_2', text: 'Microservices with gRPC / Service Mesh', votes: 198 },
+        { id: 'opt_3', text: 'Serverless / Event-Driven (Kafka / Temporal)', votes: 87 }
+      ],
+      total_votes: 427
+    },
+    tags: ['Architecture', 'SystemDesign', 'Engineering', 'TechDebate'],
+    community_id: 'comm_se',
+    community_name: 'Software Engineering',
+    likes_count: 174,
+    comments_count: 53,
+    bookmarks_count: 48,
+    shares_count: 19,
+    is_liked: false,
+    is_bookmarked: false,
+    created_at: new Date(Date.now() - 6 * 3600 * 1000).toISOString(),
   }
 ];
 
@@ -449,3 +479,127 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     created_at: new Date(Date.now() - 5 * 3600 * 1000).toISOString()
   }
 ];
+
+export const INITIAL_CONVERSATIONS: Conversation[] = [
+  {
+    id: 'conv_priya',
+    participant: {
+      id: 'usr_priya',
+      name: 'Dr. Priya Venkatesh',
+      username: 'priya_ai',
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
+      headline: 'Principal AI Scientist @ DeepMatrix | PhD IIT Madras',
+      is_online: true,
+      domain: 'AI & Machine Learning'
+    },
+    last_message: 'The memory footprint with 4-bit AWQ on ARM is really promising.',
+    last_message_at: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+    unread_count: 1
+  },
+  {
+    id: 'conv_rohit',
+    participant: {
+      id: 'usr_rohit',
+      name: 'Rohit Kulkarni',
+      username: 'rohit_k',
+      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80',
+      headline: 'Lead Site Reliability Engineer @ RazorCloud',
+      is_online: false,
+      domain: 'Software Engineering'
+    },
+    last_message: 'Let me know when you try out the new canary deployment strategy!',
+    last_message_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
+    unread_count: 0
+  },
+  {
+    id: 'conv_ananya',
+    participant: {
+      id: 'usr_ananya',
+      name: 'Ananya Roy',
+      username: 'ananya_ux',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
+      headline: 'Staff Product Designer @ FinScale',
+      is_online: true,
+      domain: 'UI/UX & Design'
+    },
+    last_message: 'Shared the tokens for the micro-interaction states. Check channel when free!',
+    last_message_at: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
+    unread_count: 0
+  }
+];
+
+export const INITIAL_MESSAGES: DirectMessage[] = [
+  {
+    id: 'msg_1',
+    conversation_id: 'conv_priya',
+    sender_id: 'usr_priya',
+    sender_name: 'Dr. Priya Venkatesh',
+    sender_username: 'priya_ai',
+    sender_avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
+    recipient_id: 'usr_me',
+    content: 'Hey Aarav! Saw your discussion on modular monoliths vs microservices. How is your team handling distributed transaction rollback across payment pipelines?',
+    created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+    is_read: true
+  },
+  {
+    id: 'msg_2',
+    conversation_id: 'conv_priya',
+    sender_id: 'usr_me',
+    sender_name: 'Aarav Sharma',
+    sender_username: 'aarav_sharma',
+    sender_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+    recipient_id: 'usr_priya',
+    content: 'We use idempotent outbox tables paired with Kafka CDC rather than two-phase commits. Keeps latency under 15ms and guarantees at-least-once delivery with consumer deduplication.',
+    created_at: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
+    is_read: true
+  },
+  {
+    id: 'msg_3',
+    conversation_id: 'conv_priya',
+    sender_id: 'usr_priya',
+    sender_name: 'Dr. Priya Venkatesh',
+    sender_username: 'priya_ai',
+    sender_avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
+    recipient_id: 'usr_me',
+    content: 'The memory footprint with 4-bit AWQ on ARM is really promising. Let me share the quant-core benchmark notebook with your team soon!',
+    created_at: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+    is_read: false
+  },
+  {
+    id: 'msg_4',
+    conversation_id: 'conv_rohit',
+    sender_id: 'usr_rohit',
+    sender_name: 'Rohit Kulkarni',
+    sender_username: 'rohit_k',
+    sender_avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80',
+    recipient_id: 'usr_me',
+    content: 'Hey! Loved your post on festive season uptime. Quick question: are you using Envoy or Istio for circuit breaking?',
+    created_at: new Date(Date.now() - 4 * 3600 * 1000).toISOString(),
+    is_read: true
+  },
+  {
+    id: 'msg_5',
+    conversation_id: 'conv_rohit',
+    sender_id: 'usr_me',
+    sender_name: 'Aarav Sharma',
+    sender_username: 'aarav_sharma',
+    sender_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+    recipient_id: 'usr_rohit',
+    content: 'We went with Envoy sidecars directly using custom Lua filters. Much lower CPU overhead for our cluster size.',
+    created_at: new Date(Date.now() - 3.5 * 3600 * 1000).toISOString(),
+    is_read: true
+  },
+  {
+    id: 'msg_6',
+    conversation_id: 'conv_rohit',
+    sender_id: 'usr_rohit',
+    sender_name: 'Rohit Kulkarni',
+    sender_username: 'rohit_k',
+    sender_avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80',
+    recipient_id: 'usr_me',
+    content: 'Let me know when you try out the new canary deployment strategy!',
+    created_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
+    is_read: true
+  }
+];
+

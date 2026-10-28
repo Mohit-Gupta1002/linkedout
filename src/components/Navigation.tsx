@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   Home, Compass, Users, Building2, Bell, PlusCircle, 
-  Search, Moon, Sun, Shield, LogOut, Check, X, Sparkles
+  Search, Moon, Sun, Shield, LogOut, Check, X, Sparkles, MessageSquare, Settings
 } from 'lucide-react';
 import { StorageEngine } from '@/lib/storage';
 import { UserProfile, Company, Community, Post } from '@/types';
@@ -15,6 +15,7 @@ export default function Navigation() {
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState<number>(0);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,6 +33,7 @@ export default function Navigation() {
     const currentUser = StorageEngine.getUser();
     setUser(currentUser);
     setUnreadCount(StorageEngine.getUnreadNotificationsCount());
+    setUnreadMessagesCount(StorageEngine.getUnreadMessagesCount());
 
     const savedTheme = (localStorage.getItem('linkedout_theme') as 'light' | 'dark') || 'light';
     setTheme(savedTheme);
@@ -140,6 +142,13 @@ export default function Navigation() {
               <Building2 size={20} />
               <span className="nav-label">Companies</span>
             </Link>
+            <Link href="/messages" className={`nav-item ${pathname.startsWith('/messages') ? 'active' : ''}`}>
+              <div className="icon-badge-wrapper">
+                <MessageSquare size={20} />
+                {unreadMessagesCount > 0 && <span className="nav-unread-dot">{unreadMessagesCount}</span>}
+              </div>
+              <span className="nav-label">Messages</span>
+            </Link>
             <Link href="/notifications" className={`nav-item ${pathname === '/notifications' ? 'active' : ''}`}>
               <div className="icon-badge-wrapper">
                 <Bell size={20} />
@@ -197,11 +206,32 @@ export default function Navigation() {
                       View Public Profile
                     </Link>
                     <Link 
+                      href="/my-communities" 
+                      className="dropdown-item" 
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      My Communities
+                    </Link>
+                    <Link 
+                      href="/messages" 
+                      className="dropdown-item" 
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      Direct Messages {unreadMessagesCount > 0 ? `(${unreadMessagesCount})` : ''}
+                    </Link>
+                    <Link 
                       href="/share-experience" 
                       className="dropdown-item" 
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
                       Submit Company Review
+                    </Link>
+                    <Link 
+                      href="/settings" 
+                      className="dropdown-item" 
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      Privacy & Settings
                     </Link>
                     <Link 
                       href="/auth/onboarding" 

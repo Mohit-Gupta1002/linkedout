@@ -67,13 +67,32 @@
 - [x] **Notifications Center (`/notifications`)**:
   - Read/unread indicators, category filters, mark single as read, and mark-all-as-read action.
 - [x] **Database & Security Architecture**:
+- [x] **Direct Messaging System (`/messages`)**:
+  - 1-to-1 persistent threads with peer profiles (e.g., Dr. Priya Venkatesh, Rohit Kulkarni, Ananya Roy).
+  - Responsive conversation split pane with online presence indicators, time-stamped chat bubbles, and read receipts.
+  - Quick reply suggestion pills for rapid professional engagement.
+  - Safety & respect warning banner adhering to minor protection boundaries and sensitive credential safeguards.
+- [x] **Interactive Feed Polls**:
+  - Dedicated Poll composer mode supporting custom questions and multiple choice options.
+  - Real-time vote casting with percentage progress fill bars, vote counts, and user vote toggling.
+  - Decoupled from public identity to ensure private voting.
+- [x] **AI Workplace Intelligence Synthesis (`CompanyAISummary.tsx`)**:
+  - Deterministic synthesis grounded in verified employee submissions.
+  - Consensus strengths, growth/friction points, and candidate fit recommendation.
+  - Zero hallucination with explicit evidence disclosures and sample size counts.
+- [x] **Dedicated Member Spaces & Settings**:
+  - My Communities workspace (`/my-communities`): Quick-jump directory of joined domain spaces and live topic channels.
+  - Account, Theme & Pseudonym Settings (`/settings`): Controls for default participation mode (public vs protected pseudonym), notifications, and theme.
+  - Password Reset Flow (`/auth/forgot-password` and `/auth/reset-password`).
+  - Auth Callback handler (`/auth/callback`).
+- [x] **Database & Security Architecture**:
   - Full PostgreSQL schema in `supabase/migrations/20261028_linkedout_schema.sql` with Row Level Security (RLS) on all exposed tables.
   - Strict decoupling of private user demographics and pseudonymous identity tokens.
   - Safe client abstraction in `src/lib/supabase.ts` with graceful fallback to `StorageEngine`.
 
 ### Known Issues & Mitigations
 - In the automated browser testing environment, Playwright's browser driver download from AzureEdge CDN encountered a network 404, preventing headless browser automation.
-- **Mitigation & Verification**: All 14 core application endpoints were independently verified via HTTP status checks (`Invoke-WebRequest`), returning `200 OK` across the board, and the automated test suite passed with 100% success.
+- **Mitigation & Verification**: All 19 core application endpoints were independently verified via automated HTTP status smoke tests (`tests/http_smoke.mjs`), returning `200 OK` across the board, and the automated unit test suite passed 7 / 7 tests with 100% success.
 
 ### Tests Run & Actual Results
 - **Automated Test Suite** (`npm test`):
@@ -84,32 +103,37 @@
     - ✔ Test 4: Post Interactions: Toggling like updates count and state consistently (PASS)
     - ✔ Test 5: Communities: Domain spaces contain topic channels and member counts (PASS)
     - ✔ Test 6: Company Intelligence: Category scores compute properly within [1, 5] bounds (PASS)
-  - Result: 6 / 6 tests passed (0 failures, 89ms duration).
+    - ✔ Test 7: Interactive Polls: Voting updates total votes and computes correct percentage distribution (PASS)
+  - Result: 7 / 7 unit tests passed (0 failures, 80ms duration).
+  - `tests/http_smoke.mjs` executed against dev server (`http://localhost:3000`):
+    - [PASS 200] /
+    - [PASS 200] /feed
+    - [PASS 200] /explore
+    - [PASS 200] /communities
+    - [PASS 200] /communities/ai-machine-learning
+    - [PASS 200] /my-communities
+    - [PASS 200] /companies
+    - [PASS 200] /companies/razorcloud-systems
+    - [PASS 200] /discussions/disc_1
+    - [PASS 200] /messages
+    - [PASS 200] /notifications
+    - [PASS 200] /settings
+    - [PASS 200] /share-experience
+    - [PASS 200] /profile/aarav_sharma
+    - [PASS 200] /auth/sign-in
+    - [PASS 200] /auth/sign-up
+    - [PASS 200] /auth/forgot-password
+    - [PASS 200] /auth/reset-password
+    - [PASS 200] /auth/onboarding
+  - Result: 19 / 19 HTTP routes returned 200 OK!
 - **TypeScript & Production Build** (`npm run build`):
-  - Turbopack compilation: SUCCESS (18 static and partial-prerendered routes generated with 0 errors).
-- **HTTP Endpoint Verification** (Local Dev Server):
-  - `GET /` -> 200 OK
-  - `GET /feed` -> 200 OK
-  - `GET /auth/sign-in` -> 200 OK
-  - `GET /auth/sign-up` -> 200 OK
-  - `GET /auth/onboarding` -> 200 OK
-  - `GET /communities` -> 200 OK
-  - `GET /companies` -> 200 OK
-  - `GET /explore` -> 200 OK
-  - `GET /notifications` -> 200 OK
-  - `GET /share-experience` -> 200 OK
-  - `GET /profile/aarav_sharma` -> 200 OK
-  - `GET /communities/ai-machine-learning` -> 200 OK
-  - `GET /companies/razorcloud-systems` -> 200 OK
-  - `GET /discussions/disc_1` -> 200 OK
+  - Turbopack compilation: SUCCESS (21 static and partial-prerendered routes compiled with 0 TypeScript errors).
 
 ### Missing Credentials
 - Supabase live keys (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) are optional; local dual-mode storage engine active with full persistence.
-
-### Current Next Task
-- Stage all files, create initial Git commit, and optionally push to GitHub using the authenticated GitHub CLI.
 
 ### Repository and Deployment Status
 - Local Git initialized (`main`).
 - GitHub CLI authenticated as `Mohit-Gupta1002`.
 - Production build verified.
+

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Company, CompanySubmission } from '@/types';
 import { StorageEngine } from '@/lib/storage';
+import CompanyAISummary from '@/components/CompanyAISummary';
 
 export default function CompanyDetailPage() {
   return (
@@ -96,6 +97,9 @@ function CompanyDetailContent() {
             </Link>
           </div>
         </div>
+
+        {/* AI Workplace Intelligence Synthesis */}
+        <CompanyAISummary company={company} submissions={submissions} />
 
         {/* Evidence & Methodology Note */}
         <div className="evidence-disclaimer card">
